@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>加密货币监控看板</title>
+    <style> table { border-collapse: collapse; } th, td { border: 1px solid #ddd; padding: 8px; } </style>
+</head>
+<body>
+    <h1>监控数据</h1>
+    <table id="data-table">
+        <thead><tr><th>币种</th><th>记录序列 (时间, 持仓, 1h变化, 24h成交变化)</th><th>大于5%持续时间 (分钟)</th></tr></thead>
+        <tbody></tbody>
+    </table>
+    <script>
+        fetch('data.json')
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.querySelector('#data-table tbody');
+                for (let symbol in data) {
+                    let row = document.createElement('tr');
+                    let records = data[symbol].records.map(r => `${r.time}: 持仓=${r.oi}, 变化=${r.oi_1h_change}%, 成交变化=${r.volume_24h_change}%`).join('<br>');
+                    row.innerHTML = `<td>${symbol}</td><td>${records}</td><td>${data[symbol].duration || '监控中'}</td>`;
+                    tbody.appendChild(row);
+                }
+            });
+    </script>
+</body>
+</html>
